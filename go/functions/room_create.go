@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"io"
 
 	"com.liamcary/multiplayer/api/model"
 	"com.liamcary/multiplayer/db"
@@ -89,6 +90,12 @@ func RoomCreate(writer http.ResponseWriter, request *http.Request) {
 	createRequest := model.RoomCreateRequest{}
 
 	if err := json.NewDecoder(request.Body).Decode(&createRequest); err != nil {
+	    defer request.Body.Close()
+	    b, err2 := io.ReadAll(request.Body)
+	    if err2 != nil{
+	    log.Printf("readBody error ")
+	    }
+	    log.Printf(string(b))
 		log.Printf("Json Decode RoomCreateRequest error")
 		writer.WriteHeader(500)
 		return
